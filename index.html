@@ -841,10 +841,13 @@
         <div class="setup-card">
             <div class="setup-step">шаг 2 — вставьте конфиг</div>
             <div class="field">
-                <textarea id="setup-config" placeholder='{"apiKey": "...", "authDomain": "...", "databaseURL": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}' style="min-height: 110px; font-size: 0.78rem; font-family: monospace;"></textarea>
+                <textarea id="setup-config" placeholder='{"apiKey": "...", "authDomain": "...", "databaseURL": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}' style="min-height: 120px; font-size: 0.78rem; font-family: monospace;"></textarea>
             </div>
-            <div class="setup-hint">Вставьте JSON-объект конфига. Можно скопировать прямо из Firebase — подойдёт и формат <code>const config = {...}</code>, мы сами достанем JSON.</div>
-            <div class="setup-error" id="setup-err-config">Не удалось прочитать конфиг. Проверьте формат.</div>
+            <div style="margin-top:8px">
+                <button class="btn btn-soft" onclick="pasteFromClipboard()" style="font-size:0.75rem">Вставить из буфера обмена</button>
+            </div>
+            <div class="setup-hint">Скопируйте конфиг из Firebase и вставьте сюда. Подойдёт любой формат — JSON, <code>const config = {...}</code>, или просто текст со страницы Firebase.</div>
+            <div class="setup-error" id="setup-err-config"></div>
         </div>
 
         <div class="setup-card">
@@ -1102,32 +1105,48 @@ function loadLocal() {
 // ===== FIREBASE =====
 function parseConfig(raw) {
     let text = raw.trim();
-    // Try to extract JSON object from various formats
-    // Handle: const config = {...}  or  firebaseConfig = {...}  or just {...}
+    if (!text) return null;
+
+    // 1. Normalize all kinds of quotes that mobile keyboards produce
+    text = text
+        .replace(/[\u201C\u201D\u201E\u201F\u2033\u2036\u00AB\u00BB]/g, '"')  // «», "", „, etc
+        .replace(/[\u2018\u2019\u201A\u201B\u2032\u2035]/g, "'")              // '', ‚, etc
+        .replace(/[\u200B\u200C\u200D\uFEFF\u00A0]/g, '')                     // zero-width & nbsp
+        .replace(/\r\n/g, '\n');                                               // normalize newlines
+
+    // 2. Extract the {...} block
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) return null;
+    let json = match[0];
+
+    // 3. Try parsing as-is first (valid JSON)
+    try { return JSON.parse(json); } catch(e) {}
+
+    // 4. Normalize step by step
+    json = json
+        .replace(/'/g, '"')              // single quotes → double
+        .replace(/,\s*([\}\]])/g, '$1'); // trailing commas
+
+    // 5. Try again after quote normalization
+    try { return JSON.parse(json); } catch(e) {}
+
+    // 6. Handle unquoted keys: word before colon that isn't already quoted
+    json = json.replace(/(?<=[{,]\s*)(\w+)\s*(?=:)/g, '"$1"');
+
+    try { return JSON.parse(json); } catch(e) {}
+
+    // 7. Nuclear option: extract key-value pairs manually
     try {
-        // Clean up: remove trailing commas, fix single quotes
-        let json = match[0]
-            .replace(/,\s*([\}\]])/g, '$1')
-            .replace(/'/g, '"')
-            .replace(/(\w+)\s*:/g, '"$1":')  // unquoted keys
-            .replace(/""/g, '"');             // fix double-quoted
-        // Remove duplicate quotes on already-quoted keys
-        json = json.replace(/"+"(\w+)"+":/g, '"$1":');
-        return JSON.parse(json);
-    } catch(e) {
-        // Second attempt: more aggressive cleanup
-        try {
-            let cleaned = match[0].replace(/'/g, '"');
-            // Ensure all keys are quoted
-            cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
-            cleaned = cleaned.replace(/,\s*}/g, '}');
-            return JSON.parse(cleaned);
-        } catch(e2) {
-            return null;
+        const obj = {};
+        const kvRegex = /["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g;
+        let m;
+        while ((m = kvRegex.exec(text)) !== null) {
+            obj[m[1]] = m[2];
         }
-    }
+        if (obj.apiKey && obj.projectId) return obj;
+    } catch(e) {}
+
+    return null;
 }
 
 function connectFirebase(config, room) {
@@ -1232,50 +1251,82 @@ function generateRoom() {
     document.getElementById('setup-room').value = w1 + '-' + w2 + '-' + n;
 }
 
+async function pasteFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('setup-config').value = text;
+        toast('вставлено');
+    } catch(e) {
+        // Fallback: focus the textarea so the user can paste manually
+        const ta = document.getElementById('setup-config');
+        ta.focus();
+        toast('нажмите «Вставить» в контекстном меню');
+    }
+}
+
 function connectSetup() {
     const configRaw = document.getElementById('setup-config').value;
     const room = document.getElementById('setup-room').value.trim().toLowerCase().replace(/\s+/g, '-');
 
-    document.getElementById('setup-err-config').style.display = 'none';
-    document.getElementById('setup-err-room').style.display = 'none';
+    const errEl = document.getElementById('setup-err-config');
+    const errRoom = document.getElementById('setup-err-room');
+    errEl.style.display = 'none';
+    errRoom.style.display = 'none';
+
+    if (!configRaw.trim()) {
+        errEl.textContent = 'Вставьте конфиг из Firebase.';
+        errEl.style.display = 'block';
+        return;
+    }
 
     const config = parseConfig(configRaw);
-    if (!config || !config.apiKey) {
-        document.getElementById('setup-err-config').style.display = 'block';
+
+    if (!config) {
+        errEl.textContent = 'Не удалось прочитать конфиг. Убедитесь что вставили блок { ... } из Firebase.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    if (!config.apiKey) {
+        errEl.textContent = 'В конфиге не найден apiKey. Проверьте что скопировали весь блок firebaseConfig.';
+        errEl.style.display = 'block';
         return;
     }
 
     if (!config.databaseURL) {
-        // Try to construct it from projectId
         if (config.projectId) {
+            // Try both possible URL formats
             config.databaseURL = 'https://' + config.projectId + '-default-rtdb.firebaseio.com';
         } else {
-            document.getElementById('setup-err-config').style.display = 'block';
+            errEl.textContent = 'Нет databaseURL и projectId. Убедитесь что создали Realtime Database в Firebase.';
+            errEl.style.display = 'block';
             return;
         }
     }
 
     if (!room) {
-        document.getElementById('setup-err-room').style.display = 'block';
+        errRoom.textContent = 'Введите код комнаты.';
+        errRoom.style.display = 'block';
         return;
     }
 
     const ok = connectFirebase(config, room);
     if (!ok) {
-        document.getElementById('setup-err-config').style.display = 'block';
+        errEl.textContent = 'Не удалось подключиться к Firebase. Проверьте конфиг.';
+        errEl.style.display = 'block';
         return;
     }
 
     // Check if room already has data; if not, push our local data
     roomRef.once('value', snap => {
         if (!snap.val()) {
-            // New room — push local data as initial
             D = loadLocal();
             persist();
         }
         showApp();
     });
 }
+
 
 function skipSetup() {
     syncMode = 'local';
