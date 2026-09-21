@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>до Китая</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F7F3EE;
+            --bg-warm: #F0EBE3;
+            --card: #FFFFFF;
+            --card-border: #E8E2D9;
+            --accent: #BF6B4E;
+            --accent-soft: #D4927A;
+            --accent-bg: #FAF0EC;
+            --sage: #7A9E7E;
+            --sage-bg: #EFF5F0;
+            --text: #3D3632;
+            --text-mid: #7A7068;
+            --text-light: #A89E95;
+            --ink: #2C2825;
+            --shadow-sm: 0 1px 3px rgba(60,50,40,0.04);
+            --shadow-md: 0 4px 16px rgba(60,50,40,0.06);
+            --shadow-lg: 0 8px 30px rgba(60,50,40,0.08);
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* grain overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            opacity: 0.025;
+            pointer-events: none;
+            z-index: 9999;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 128px;
+        }
+
+        ::selection {
+            background: var(--accent-soft);
+            color: white;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            padding: 56px 24px 48px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-tag {
+            display: inline-block;
+            font-size: 0.65rem;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding: 6px 16px;
+            background: var(--accent-bg);
+            border-radius: 20px;
+        }
+
+        .header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 2.8rem;
+            color: var(--ink);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 8px;
+        }
+
+        .header-sub {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .header-line {
+            width: 40px;
+            height: 2px;
+            background: var(--accent-soft);
+            margin: 24px auto 0;
+            border-radius: 1px;
+        }
+
+        /* ===== NAV ===== */
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+        }
+
+        .nav::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(90%, 700px);
+            height: 1px;
+            background: var(--card-border);
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            color: var(--text);
+            background: var(--bg-warm);
+        }
+
+        .nav-btn.active {
+            color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 24px 16px 120px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeUp 0.35s ease;
+        }
+        .section.active { display: block; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* ===== SAVINGS ===== */
+        .savings-hero {
+            text-align: center;
+            padding: 12px 0 20px;
+        }
+
+        .savings-amount {
+            font-family: 'Caveat', cursive;
+            font-size: 3.2rem;
+            color: var(--ink);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .savings-of {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 6px;
+        }
+
+        .progress-wrap {
+            margin: 20px 0 8px;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-warm);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-label {
+            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--card-border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 16px 8px;
+            background: var(--card);
+        }
+
+        .stat-val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        /* countdown */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 20px;
+            background: var(--bg-warm);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+        }
+
+        .countdown.hidden { display: none; }
+
+        .cd-block { text-align: center; }
+
+        .cd-num {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .cd-unit {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ===== FORMS ===== */
+        .field {
+            margin-bottom: 12px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-mid);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .field-row .field { flex: 1; min-width: 0; }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--card-border);
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text);
+            background: var(--bg);
+            transition: all 0.15s ease;
+            outline: none;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent-soft);
+            background: #fff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 72px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-main {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-main:hover {
+            background: #A85A40;
+        }
+
+        .btn-soft {
+            background: var(--bg-warm);
+            color: var(--text-mid);
+        }
+
+        .btn-soft:hover {
+            background: var(--card-border);
+        }
+
+        .btn-ghost {
+            background: none;
+            color: var(--text-light);
+            padding: 6px 10px;
+            font-size: 0.75rem;
+        }
+
+        .btn-ghost:hover {
+            color: var(--accent);
+        }
+
+        .btn-sage {
+            background: var(--sage);
+            color: #fff;
+        }
+
+        .btn-sage:hover {
+            background: #6B8E6F;
+        }
+
+        /* ===== LIST ITEMS ===== */
+        .entry {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--bg-warm);
+        }
+
+        .entry:last-child { border-bottom: none; }
+
+        .entry-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            flex-shrink: 0;
+        }
+
+        .entry-body { flex: 1; min-width: 0; }
+
+        .entry-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .entry-meta {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .entry-amount {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--sage);
+            white-space: nowrap;
+        }
+
+        .entry-remove {
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .entry:hover .entry-remove {
+            opacity: 1;
+        }
+
+        /* ===== MEETINGS ===== */
+        .meeting {
+            padding: 16px;
+            border-left: 3px solid var(--accent-soft);
+            background: var(--bg);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin-bottom: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .meeting:hover {
+            border-left-color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        .meeting.past {
+            opacity: 0.45;
+            border-left-color: var(--card-border);
+        }
+
+        .meeting-date {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--ink);
+        }
+
+        .meeting-time {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .meeting-place {
+            font-size: 0.8rem;
+            color: var(--text-mid);
+            margin-top: 4px;
+        }
+
+        .meeting-note {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-top: 3px;
+            font-style: italic;
+        }
+
+        .meeting-actions {
+            margin-top: 8px;
+        }
+
+        /* ===== FILTERS ===== */
+        .filters {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 5px 14px;
+            border-radius: 6px;
+            border: 1.5px solid var(--card-border);
+            background: transparent;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.15s ease;
+        }
+
+        .filter-btn.on {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        /* ===== CHECKLIST ===== */
+        .check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--bg-warm);
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .check:last-child { border-bottom: none; }
+
+        .check.done { opacity: 0.35; }
+        .check.done .check-label { text-decoration: line-through; }
+
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--card-border);
+            border-radius: 6px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            font-size: 11px;
+            color: transparent;
+        }
+
+        .check.done .check-box {
+            background: var(--sage);
+            border-color: var(--sage);
+            color: white;
+        }
+
+        .check-label {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+
+        .check-cat {
+            font-size: 0.65rem;
+            color: var(--text-light);
+            background: var(--bg-warm);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .check-rm {
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+
+        .check:hover .check-rm { opacity: 1; }
+
+        /* ===== WISH CARDS ===== */
+        .wish {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            transition: all 0.15s;
+        }
+
+        .wish:hover { background: var(--accent-bg); }
+        .wish.done { opacity: 0.35; }
+        .wish.done .wish-body { text-decoration: line-through; }
+
+        .wish-from {
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .wish-body {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .wish-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 6px;
+        }
+
+        /* ===== PERSON PICKER ===== */
+        .picker {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .picker-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-light);
+            transition: all 0.15s;
+            text-align: center;
+        }
+
+        .picker-btn.on {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-bg);
+        }
+
+        /* ===== EMPTY ===== */
+        .empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-light);
+            font-size: 0.8rem;
+        }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: var(--ink);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.25s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ===== SETTINGS ===== */
+        .names-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .names-row input {
+            max-width: 160px;
+        }
+
+        .names-heart {
+            color: var(--accent-soft);
+            font-size: 0.85rem;
+        }
+
+        .danger-zone {
+            border-color: #E8D2D2;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 520px) {
+            .header h1 { font-size: 2.2rem; }
+            .savings-amount { font-size: 2.6rem; }
+            .stats-row { grid-template-columns: 1fr; }
+            .field-row { flex-direction: column; }
+            .nav-btn { padding: 8px 14px; font-size: 0.75rem; }
+            .card { padding: 18px; }
+            .countdown { gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-tag">копим вместе</div>
+    <h1>до Китая</h1>
+    <p class="header-sub" id="header-sub">маленькими шагами к большой мечте</p>
+    <div class="header-line"></div>
+</header>
+
+<nav class="nav">
+    <button class="nav-btn active" data-tab="savings">копилка</button>
+    <button class="nav-btn" data-tab="meetings">встречи</button>
+    <button class="nav-btn" data-tab="wishlist">хотелки</button>
+    <button class="nav-btn" data-tab="wishes">пожелания</button>
+    <button class="nav-btn" data-tab="settings">настройки</button>
+</nav>
+
+<main class="container">
+
+    <!-- ===== SAVINGS ===== -->
+    <section class="section active" id="s-savings">
+
+        <div class="countdown hidden" id="countdown"></div>
+
+        <div class="card">
+            <div class="savings-hero">
+                <div class="savings-amount" id="total-saved">0 ₽</div>
+                <div class="savings-of">из <span id="goal-show">0</span></div>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-track">
+                    <div class="progress-bar" id="pbar" style="width:0%"></div>
+                </div>
+                <div class="progress-label" id="pct-label">0 %</div>
+            </div>
+            <div class="stats-row">
+                <div class="stat"><div class="stat-val" id="st-months">0</div><div class="stat-label">взносов</div></div>
+                <div class="stat"><div class="stat-val" id="st-avg">0</div><div class="stat-label">в среднем</div></div>
+                <div class="stat"><div class="stat-val" id="st-left">0</div><div class="stat-label">осталось</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Новый взнос</div>
+            <div class="field-row">
+                <div class="field"><label>Сумма</label><input type="number" id="sav-amount" placeholder="10 000"></div>
+                <div class="field"><label>Дата</label><input type="date" id="sav-date"></div>
+            </div>
+            <div class="field"><label>Комментарий</label><input type="text" id="sav-note" placeholder="зарплата, подработка..."></div>
+            <button class="btn btn-main" onclick="addSaving()">Добавить</button>
+        </div>
+
+        <div class="card">
+            <div class="card-label">История</div>
+            <div id="sav-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== MEETINGS ===== -->
+    <section class="section" id="s-meetings">
+        <div class="card">
+            <div class="card-label">Запланировать</div>
+            <div class="field-row">
+                <div class="field"><label>Дата</label><input type="date" id="mt-date"></div>
+                <div class="field"><label>Время</label><input type="time" id="mt-time"></div>
+            </div>
+            <div class="field"><label>Место</label><input type="text" id="mt-place" placeholder="где встречаемся"></div>
+            <div class="field"><label>Заметка</label><input type="text" id="mt-note" placeholder="что не забыть"></div>
+            <button class="btn btn-main" onclick="addMeeting()">Запланировать</button>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Наши встречи</div>
+            <div class="filters" id="mt-filters">
+                <button class="filter-btn on" data-mf="upcoming">предстоящие</button>
+                <button class="filter-btn" data-mf="past">прошедшие</button>
+                <button class="filter-btn" data-mf="all">все</button>
+            </div>
+            <div id="mt-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== WISHLIST ===== -->
+    <section class="section" id="s-wishlist">
+        <div class="card">
+            <div class="card-label">Новая хотелка</div>
+            <div class="field"><label>Что хотим</label><input type="text" id="wl-text" placeholder="Великая Стена, утка по-пекински..."></div>
+            <div class="field">
+                <label>Категория</label>
+                <select id="wl-cat">
+                    <option value="places">Места</option>
+                    <option value="food">Еда</option>
+                    <option value="shopping">Покупки</option>
+                    <option value="activities">Развлечения</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            <button class="btn btn-sage" onclick="addWish()">Добавить</button>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Список</div>
+            <div class="filters" id="wl-filters">
+                <button class="filter-btn on" data-wf="all">все</button>
+                <button class="filter-btn" data-wf="places">места</button>
+                <button class="filter-btn" data-wf="food">еда</button>
+                <button class="filter-btn" data-wf="shopping">покупки</button>
+                <button class="filter-btn" data-wf="activities">развлечения</button>
+                <button class="filter-btn" data-wf="other">другое</button>
+            </div>
+            <div id="wl-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== WISHES ===== -->
+    <section class="section" id="s-wishes">
+        <div class="card">
+            <div class="card-label">Написать пожелание</div>
+            <div class="picker" id="w-picker">
+                <button class="picker-btn on" data-p="person1" id="pk1">Он</button>
+                <button class="picker-btn" data-p="person2" id="pk2">Она</button>
+            </div>
+            <div class="field"><label>Чего хочу от тебя</label><textarea id="w-text" placeholder="напиши, чего хочешь..."></textarea></div>
+            <button class="btn btn-main" onclick="addWishFor()">Отправить</button>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Пожелания друг другу</div>
+            <div class="filters" id="w-filters">
+                <button class="filter-btn on" data-wff="all">все</button>
+                <button class="filter-btn" data-wff="person1" id="ff1">от него</button>
+                <button class="filter-btn" data-wff="person2" id="ff2">от неё</button>
+                <button class="filter-btn" data-wff="active">активные</button>
+                <button class="filter-btn" data-wff="done">исполненные</button>
+            </div>
+            <div id="w-list"></div>
+        </div>
+    </section>
+
+    <!-- ===== SETTINGS ===== -->
+    <section class="section" id="s-settings">
+        <div class="card">
+            <div class="card-label">Общее</div>
+
+            <div class="field">
+                <label>Ваши имена</label>
+                <div class="names-row">
+                    <input type="text" id="cfg-n1" placeholder="Он">
+                    <span class="names-heart">&</span>
+                    <input type="text" id="cfg-n2" placeholder="Она">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field"><label>Цель</label><input type="number" id="cfg-goal" placeholder="500000"></div>
+                <div class="field">
+                    <label>Валюта</label>
+                    <select id="cfg-cur">
+                        <option value="₽">₽ рубли</option>
+                        <option value="¥">¥ юани</option>
+                        <option value="$">$ доллары</option>
+                        <option value="€">€ евро</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field"><label>Примерная дата поездки</label><input type="date" id="cfg-trip"></div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                <button class="btn btn-main" onclick="saveSettings()">Сохранить</button>
+                <button class="btn btn-soft" onclick="exportData()">Экспорт</button>
+                <button class="btn btn-soft" onclick="document.getElementById('imp').click()">Импорт</button>
+                <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
+            </div>
+        </div>
+
+        <div class="card danger-zone">
+            <div class="card-label" style="color:var(--accent)">Удалить всё</div>
+            <p style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;">Это сотрёт все данные без возможности восстановления.</p>
+            <button class="btn btn-soft" style="color:var(--accent)" onclick="clearAll()">Очистить</button>
+        </div>
+    </section>
+</main>
+
+<script>
+// ===== DATA =====
+const DEFAULTS = {
+    settings: { goal: 500000, currency: '₽', tripDate: '', person1: '', person2: '' },
+    savings: [], meetings: [], wishlist: [], wishesFor: []
+};
+
+function load() {
+    try {
+        const r = localStorage.getItem('ct');
+        if (r) { const p = JSON.parse(r); return { ...DEFAULTS, ...p, settings: { ...DEFAULTS.settings, ...p.settings } }; }
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save() { localStorage.setItem('ct', JSON.stringify(D)); }
+let D = load();
+
+// ===== UTILS =====
+const fmt = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const pName = p => p === 'person1' ? (D.settings.person1 || 'Он') : (D.settings.person2 || 'Она');
+
+function fmtDate(s) {
+    if (!s) return '';
+    const d = new Date(s);
+    const m = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+    return d.getDate() + ' ' + m[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function toast(msg) {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 2200);
+}
+
+// ===== TABS =====
+document.querySelectorAll('.nav-btn').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        document.getElementById('s-' + b.dataset.tab).classList.add('active');
+    });
+});
+
+// ===== COUNTDOWN =====
+function renderCountdown() {
+    const el = document.getElementById('countdown');
+    if (!D.settings.tripDate) { el.classList.add('hidden'); return; }
+    const diff = new Date(D.settings.tripDate) - new Date();
+    if (diff <= 0) {
+        el.classList.remove('hidden');
+        el.innerHTML = '<div style="font-family:Caveat,cursive;font-size:1.4rem;color:var(--accent)">Время пришло!</div>';
+        return;
+    }
+    el.classList.remove('hidden');
+    const days = Math.floor(diff / 864e5);
+    const hrs = Math.floor((diff % 864e5) / 36e5);
+    el.innerHTML = `
+        <div class="cd-block"><div class="cd-num">${days}</div><div class="cd-unit">дней</div></div>
+        <div class="cd-block"><div class="cd-num">${hrs}</div><div class="cd-unit">часов</div></div>
+    `;
+}
+
+// ===== SAVINGS =====
+function renderSavings() {
+    const c = D.settings.currency;
+    const total = D.savings.reduce((s, e) => s + e.amount, 0);
+    const goal = D.settings.goal || 1;
+    const pct = Math.min(100, Math.round(total / goal * 100));
+
+    document.getElementById('total-saved').textContent = fmt(total) + ' ' + c;
+    document.getElementById('goal-show').textContent = fmt(D.settings.goal) + ' ' + c;
+    document.getElementById('pbar').style.width = pct + '%';
+    document.getElementById('pct-label').textContent = pct + ' %';
+
+    const n = D.savings.length;
+    document.getElementById('st-months').textContent = n;
+    document.getElementById('st-avg').textContent = n ? fmt(Math.round(total / n)) : '—';
+    document.getElementById('st-left').textContent = fmt(Math.max(0, D.settings.goal - total));
+
+    const list = document.getElementById('sav-list');
+    if (!n) { list.innerHTML = '<div class="empty">пока пусто</div>'; return; }
+
+    list.innerHTML = [...D.savings].sort((a, b) => new Date(b.date) - new Date(a.date)).map(e => `
+        <div class="entry">
+            <div class="entry-dot"></div>
+            <div class="entry-body">
+                <div class="entry-title">${e.note || 'пополнение'}</div>
+                <div class="entry-meta">${fmtDate(e.date)}</div>
+            </div>
+            <div class="entry-amount">+${fmt(e.amount)}</div>
+            <button class="btn btn-ghost entry-remove" onclick="delSaving('${e.id}')">✕</button>
+        </div>
+    `).join('');
+}
+
+function addSaving() {
+    const amount = parseInt(document.getElementById('sav-amount').value);
+    const date = document.getElementById('sav-date').value;
+    const note = document.getElementById('sav-note').value.trim();
+    if (!amount || amount <= 0) return toast('укажите сумму');
+    if (!date) return toast('укажите дату');
+
+    const prevTotal = D.savings.reduce((s, e) => s + e.amount, 0);
+    D.savings.push({ id: uid(), amount, date, note });
+    save(); renderSavings();
+
+    document.getElementById('sav-amount').value = '';
+    document.getElementById('sav-note').value = '';
+
+    const newPct = Math.round(D.savings.reduce((s, e) => s + e.amount, 0) / D.settings.goal * 100);
+    const oldPct = Math.round(prevTotal / D.settings.goal * 100);
+    if (newPct >= 100 && oldPct < 100) toast('цель достигнута!');
+    else if (newPct >= 50 && oldPct < 50) toast('половина пути!');
+    else toast('добавлено');
+}
+
+function delSaving(id) {
+    if (!confirm('Удалить?')) return;
+    D.savings = D.savings.filter(e => e.id !== id);
+    save(); renderSavings();
+}
+
+// ===== MEETINGS =====
+let mtFilter = 'upcoming';
+
+document.querySelectorAll('[data-mf]').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('[data-mf]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        mtFilter = b.dataset.mf;
+        renderMeetings();
+    });
+});
+
+function renderMeetings() {
+    const now = new Date(); now.setHours(0,0,0,0);
+    let items = [...D.meetings];
+    if (mtFilter === 'upcoming') items = items.filter(m => new Date(m.date) >= now).sort((a,b) => new Date(a.date) - new Date(b.date));
+    else if (mtFilter === 'past') items = items.filter(m => new Date(m.date) < now).sort((a,b) => new Date(b.date) - new Date(a.date));
+    else items.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+    const list = document.getElementById('mt-list');
+    if (!items.length) { list.innerHTML = '<div class="empty">нет встреч</div>'; return; }
+
+    list.innerHTML = items.map(m => {
+        const past = new Date(m.date) < now;
+        return `
+            <div class="meeting ${past ? 'past' : ''}">
+                <div class="meeting-date">${fmtDate(m.date)}</div>
+                ${m.time ? `<div class="meeting-time">${m.time}</div>` : ''}
+                ${m.place ? `<div class="meeting-place">${m.place}</div>` : ''}
+                ${m.note ? `<div class="meeting-note">${m.note}</div>` : ''}
+                <div class="meeting-actions"><button class="btn btn-ghost" onclick="delMeeting('${m.id}')">удалить</button></div>
+            </div>`;
+    }).join('');
+}
+
+function addMeeting() {
+    const date = document.getElementById('mt-date').value;
+    if (!date) return toast('укажите дату');
+    D.meetings.push({
+        id: uid(),
+        date,
+        time: document.getElementById('mt-time').value,
+        place: document.getElementById('mt-place').value.trim(),
+        note: document.getElementById('mt-note').value.trim()
+    });
+    save(); renderMeetings();
+    ['mt-date','mt-time','mt-place','mt-note'].forEach(id => document.getElementById(id).value = '');
+    toast('встреча добавлена');
+}
+
+function delMeeting(id) {
+    if (!confirm('Удалить?')) return;
+    D.meetings = D.meetings.filter(m => m.id !== id);
+    save(); renderMeetings();
+}
+
+// ===== WISHLIST =====
+let wlFilter = 'all';
+const CAT_NAMES = { places: 'места', food: 'еда', shopping: 'покупки', activities: 'развлечения', other: 'другое' };
+
+document.querySelectorAll('[data-wf]').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('[data-wf]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        wlFilter = b.dataset.wf;
+        renderWishlist();
+    });
+});
+
+function renderWishlist() {
+    let items = [...D.wishlist];
+    if (wlFilter !== 'all') items = items.filter(w => w.category === wlFilter);
+    items.sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
+
+    const list = document.getElementById('wl-list');
+    if (!items.length) { list.innerHTML = '<div class="empty">список пуст</div>'; return; }
+
+    list.innerHTML = items.map(w => `
+        <div class="check ${w.done ? 'done' : ''}" onclick="toggleWL('${w.id}')">
+            <div class="check-box">${w.done ? '✓' : ''}</div>
+            <span class="check-label">${w.text}</span>
+            <span class="check-cat">${CAT_NAMES[w.category] || w.category}</span>
+            <button class="btn btn-ghost check-rm" onclick="event.stopPropagation();delWL('${w.id}')">✕</button>
+        </div>
+    `).join('');
+}
+
+function addWish() {
+    const text = document.getElementById('wl-text').value.trim();
+    if (!text) return toast('напишите хотелку');
+    D.wishlist.push({ id: uid(), text, category: document.getElementById('wl-cat').value, done: false });
+    save(); renderWishlist();
+    document.getElementById('wl-text').value = '';
+    toast('добавлено');
+}
+
+function toggleWL(id) {
+    const w = D.wishlist.find(x => x.id === id);
+    if (w) { w.done = !w.done; save(); renderWishlist(); }
+}
+
+function delWL(id) {
+    if (!confirm('Удалить?')) return;
+    D.wishlist = D.wishlist.filter(x => x.id !== id);
+    save(); renderWishlist();
+}
+
+// ===== WISHES FOR EACH OTHER =====
+let wPerson = 'person1';
+let wFilter = 'all';
+
+document.querySelectorAll('#w-picker .picker-btn').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('#w-picker .picker-btn').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        wPerson = b.dataset.p;
+    });
+});
+
+document.querySelectorAll('[data-wff]').forEach(b => {
+    b.addEventListener('click', () => {
+        document.querySelectorAll('[data-wff]').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        wFilter = b.dataset.wff;
+        renderWishesFor();
+    });
+});
+
+function renderWishesFor() {
+    let items = [...D.wishesFor];
+    if (wFilter === 'person1' || wFilter === 'person2') items = items.filter(w => w.from === wFilter);
+    else if (wFilter === 'active') items = items.filter(w => !w.fulfilled);
+    else if (wFilter === 'done') items = items.filter(w => w.fulfilled);
+    items.sort((a, b) => (a.fulfilled === b.fulfilled) ? new Date(b.createdAt) - new Date(a.createdAt) : a.fulfilled ? 1 : -1);
+
+    const list = document.getElementById('w-list');
+    if (!items.length) { list.innerHTML = '<div class="empty">пока нет пожеланий</div>'; return; }
+
+    list.innerHTML = items.map(w => `
+        <div class="wish ${w.fulfilled ? 'done' : ''}">
+            <div class="wish-from">${pName(w.from)} хочет:</div>
+            <div class="wish-body">${w.text}</div>
+            <div class="wish-actions">
+                <button class="btn ${w.fulfilled ? 'btn-soft' : 'btn-main'}" style="font-size:0.72rem;padding:7px 14px" onclick="toggleWF('${w.id}')">
+                    ${w.fulfilled ? 'вернуть' : 'исполнено'}
+                </button>
+                <button class="btn btn-ghost" onclick="delWF('${w.id}')">удалить</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function addWishFor() {
+    const text = document.getElementById('w-text').value.trim();
+    if (!text) return toast('напишите пожелание');
+    D.wishesFor.push({ id: uid(), from: wPerson, text, fulfilled: false, createdAt: new Date().toISOString() });
+    save(); renderWishesFor();
+    document.getElementById('w-text').value = '';
+    toast('отправлено');
+}
+
+function toggleWF(id) {
+    const w = D.wishesFor.find(x => x.id === id);
+    if (w) { w.fulfilled = !w.fulfilled; save(); renderWishesFor(); }
+}
+
+function delWF(id) {
+    if (!confirm('Удалить?')) return;
+    D.wishesFor = D.wishesFor.filter(x => x.id !== id);
+    save(); renderWishesFor();
+}
+
+// ===== SETTINGS =====
+function loadSettings() {
+    document.getElementById('cfg-goal').value = D.settings.goal || '';
+    document.getElementById('cfg-cur').value = D.settings.currency || '₽';
+    document.getElementById('cfg-trip').value = D.settings.tripDate || '';
+    document.getElementById('cfg-n1').value = D.settings.person1 || '';
+    document.getElementById('cfg-n2').value = D.settings.person2 || '';
+    updateLabels();
+}
+
+function saveSettings() {
+    D.settings.goal = parseInt(document.getElementById('cfg-goal').value) || 500000;
+    D.settings.currency = document.getElementById('cfg-cur').value;
+    D.settings.tripDate = document.getElementById('cfg-trip').value;
+    D.settings.person1 = document.getElementById('cfg-n1').value.trim();
+    D.settings.person2 = document.getElementById('cfg-n2').value.trim();
+    save(); updateLabels(); renderSavings(); renderCountdown();
+    // Update header subtitle with names if set
+    const n1 = D.settings.person1, n2 = D.settings.person2;
+    if (n1 && n2) document.getElementById('header-sub').textContent = n1 + ' & ' + n2;
+    toast('сохранено');
+}
+
+function updateLabels() {
+    const p1 = pName('person1'), p2 = pName('person2');
+    document.getElementById('pk1').textContent = p1;
+    document.getElementById('pk2').textContent = p2;
+    document.getElementById('ff1').textContent = 'от ' + p1;
+    document.getElementById('ff2').textContent = 'от ' + p2;
+    const n1 = D.settings.person1, n2 = D.settings.person2;
+    if (n1 && n2) document.getElementById('header-sub').textContent = n1 + ' & ' + n2;
+}
+
+function exportData() {
+    const b = new Blob([JSON.stringify(D, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b);
+    a.download = 'china-trip-' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    toast('экспортировано');
+}
+
+function importData(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+        try {
+            const p = JSON.parse(ev.target.result);
+            D = { ...DEFAULTS, ...p, settings: { ...DEFAULTS.settings, ...p.settings } };
+            save(); loadSettings(); renderAll();
+            toast('импортировано');
+        } catch { toast('ошибка чтения'); }
+    };
+    r.readAsText(f);
+    e.target.value = '';
+}
+
+function clearAll() {
+    if (!confirm('Точно удалить все данные?')) return;
+    localStorage.removeItem('ct');
+    D = JSON.parse(JSON.stringify(DEFAULTS));
+    loadSettings(); renderAll();
+    toast('данные удалены');
+}
+
+// ===== INIT =====
+function renderAll() { renderSavings(); renderMeetings(); renderWishlist(); renderWishesFor(); renderCountdown(); }
+
+document.getElementById('sav-date').value = new Date().toISOString().split('T')[0];
+loadSettings();
+renderAll();
+setInterval(renderCountdown, 60000);
+</script>
+</body>
+</html>
