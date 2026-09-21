@@ -6,6 +6,8 @@
     <title>до Китая</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <style>
         :root {
             --bg: #F7F3EE;
@@ -38,7 +40,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* grain overlay */
         body::after {
             content: '';
             position: fixed;
@@ -50,9 +51,140 @@
             background-size: 128px;
         }
 
-        ::selection {
-            background: var(--accent-soft);
-            color: white;
+        ::selection { background: var(--accent-soft); color: white; }
+
+        /* ===== SETUP OVERLAY ===== */
+        .setup-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .setup-overlay.hidden { display: none; }
+
+        .setup-box {
+            max-width: 520px;
+            width: 100%;
+        }
+
+        .setup-box h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 2.4rem;
+            color: var(--ink);
+            margin-bottom: 4px;
+        }
+
+        .setup-box .setup-sub {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 28px;
+        }
+
+        .setup-card {
+            background: var(--card);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .setup-step {
+            font-size: 0.65rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .setup-text {
+            font-size: 0.82rem;
+            color: var(--text-mid);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .setup-text a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid var(--accent-soft);
+        }
+
+        .setup-text a:hover { border-color: var(--accent); }
+
+        .setup-text code {
+            background: var(--bg-warm);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+        }
+
+        .setup-hint {
+            font-size: 0.72rem;
+            color: var(--text-light);
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .setup-or {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            margin: 16px 0;
+        }
+
+        .room-code-display {
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: var(--accent);
+            text-align: center;
+            padding: 12px;
+            background: var(--accent-bg);
+            border-radius: var(--radius-sm);
+            letter-spacing: 3px;
+            user-select: all;
+            cursor: pointer;
+        }
+
+        .setup-error {
+            font-size: 0.78rem;
+            color: #C0392B;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .inline-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== SYNC INDICATOR ===== */
+        .sync-dot {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--card-border);
+            margin-right: 6px;
+            vertical-align: middle;
+            transition: background 0.3s;
+        }
+
+        .sync-dot.online { background: var(--sage); }
+        .sync-dot.offline { background: var(--accent); }
+
+        .sync-status {
+            font-size: 0.68rem;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: -8px;
+            margin-bottom: 4px;
         }
 
         /* ===== HEADER ===== */
@@ -132,18 +264,10 @@
             font-weight: 500;
             color: var(--text-light);
             transition: all 0.2s ease;
-            position: relative;
         }
 
-        .nav-btn:hover {
-            color: var(--text);
-            background: var(--bg-warm);
-        }
-
-        .nav-btn.active {
-            color: var(--accent);
-            background: var(--accent-bg);
-        }
+        .nav-btn:hover { color: var(--text); background: var(--bg-warm); }
+        .nav-btn.active { color: var(--accent); background: var(--accent-bg); }
 
         /* ===== LAYOUT ===== */
         .container {
@@ -152,10 +276,7 @@
             padding: 24px 16px 120px;
         }
 
-        .section {
-            display: none;
-            animation: fadeUp 0.35s ease;
-        }
+        .section { display: none; animation: fadeUp 0.35s ease; }
         .section.active { display: block; }
 
         @keyframes fadeUp {
@@ -173,9 +294,7 @@
             transition: box-shadow 0.2s ease;
         }
 
-        .card:hover {
-            box-shadow: var(--shadow-md);
-        }
+        .card:hover { box-shadow: var(--shadow-md); }
 
         .card-label {
             font-size: 0.7rem;
@@ -187,10 +306,7 @@
         }
 
         /* ===== SAVINGS ===== */
-        .savings-hero {
-            text-align: center;
-            padding: 12px 0 20px;
-        }
+        .savings-hero { text-align: center; padding: 12px 0 20px; }
 
         .savings-amount {
             font-family: 'Caveat', cursive;
@@ -200,15 +316,9 @@
             line-height: 1;
         }
 
-        .savings-of {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 6px;
-        }
+        .savings-of { font-size: 0.85rem; color: var(--text-light); margin-top: 6px; }
 
-        .progress-wrap {
-            margin: 20px 0 8px;
-        }
+        .progress-wrap { margin: 20px 0 8px; }
 
         .progress-track {
             width: 100%;
@@ -243,26 +353,10 @@
             margin-top: 20px;
         }
 
-        .stat {
-            text-align: center;
-            padding: 16px 8px;
-            background: var(--card);
-        }
+        .stat { text-align: center; padding: 16px 8px; background: var(--card); }
+        .stat-val { font-size: 1.1rem; font-weight: 700; color: var(--ink); }
+        .stat-label { font-size: 0.65rem; color: var(--text-light); margin-top: 4px; }
 
-        .stat-val {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--ink);
-        }
-
-        .stat-label {
-            font-size: 0.65rem;
-            color: var(--text-light);
-            margin-top: 4px;
-            letter-spacing: 0.3px;
-        }
-
-        /* countdown */
         .countdown {
             display: flex;
             justify-content: center;
@@ -274,44 +368,14 @@
         }
 
         .countdown.hidden { display: none; }
-
         .cd-block { text-align: center; }
-
-        .cd-num {
-            font-family: 'Caveat', cursive;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            line-height: 1;
-        }
-
-        .cd-unit {
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-light);
-            margin-top: 4px;
-            font-weight: 500;
-        }
+        .cd-num { font-family: 'Caveat', cursive; font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+        .cd-unit { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); margin-top: 4px; font-weight: 500; }
 
         /* ===== FORMS ===== */
-        .field {
-            margin-bottom: 12px;
-        }
-
-        .field label {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--text-mid);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .field-row {
-            display: flex;
-            gap: 10px;
-        }
-
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 0.7rem; color: var(--text-mid); margin-bottom: 6px; font-weight: 500; }
+        .field-row { display: flex; gap: 10px; }
         .field-row .field { flex: 1; min-width: 0; }
 
         input, textarea, select {
@@ -327,15 +391,8 @@
             outline: none;
         }
 
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--accent-soft);
-            background: #fff;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 72px;
-        }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent-soft); background: #fff; }
+        textarea { resize: vertical; min-height: 72px; }
 
         .btn {
             display: inline-flex;
@@ -351,43 +408,16 @@
             transition: all 0.15s ease;
         }
 
-        .btn-main {
-            background: var(--accent);
-            color: #fff;
-        }
+        .btn-main { background: var(--accent); color: #fff; }
+        .btn-main:hover { background: #A85A40; }
+        .btn-soft { background: var(--bg-warm); color: var(--text-mid); }
+        .btn-soft:hover { background: var(--card-border); }
+        .btn-ghost { background: none; color: var(--text-light); padding: 6px 10px; font-size: 0.75rem; }
+        .btn-ghost:hover { color: var(--accent); }
+        .btn-sage { background: var(--sage); color: #fff; }
+        .btn-sage:hover { background: #6B8E6F; }
 
-        .btn-main:hover {
-            background: #A85A40;
-        }
-
-        .btn-soft {
-            background: var(--bg-warm);
-            color: var(--text-mid);
-        }
-
-        .btn-soft:hover {
-            background: var(--card-border);
-        }
-
-        .btn-ghost {
-            background: none;
-            color: var(--text-light);
-            padding: 6px 10px;
-            font-size: 0.75rem;
-        }
-
-        .btn-ghost:hover {
-            color: var(--accent);
-        }
-
-        .btn-sage {
-            background: var(--sage);
-            color: #fff;
-        }
-
-        .btn-sage:hover {
-            background: #6B8E6F;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ===== LIST ITEMS ===== */
         .entry {
@@ -399,44 +429,13 @@
         }
 
         .entry:last-child { border-bottom: none; }
-
-        .entry-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-soft);
-            flex-shrink: 0;
-        }
-
+        .entry-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-soft); flex-shrink: 0; }
         .entry-body { flex: 1; min-width: 0; }
-
-        .entry-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .entry-meta {
-            font-size: 0.72rem;
-            color: var(--text-light);
-            margin-top: 2px;
-        }
-
-        .entry-amount {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--sage);
-            white-space: nowrap;
-        }
-
-        .entry-remove {
-            opacity: 0;
-            transition: opacity 0.15s;
-        }
-
-        .entry:hover .entry-remove {
-            opacity: 1;
-        }
+        .entry-title { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+        .entry-meta { font-size: 0.72rem; color: var(--text-light); margin-top: 2px; }
+        .entry-amount { font-weight: 600; font-size: 0.9rem; color: var(--sage); white-space: nowrap; }
+        .entry-remove { opacity: 0; transition: opacity 0.15s; }
+        .entry:hover .entry-remove { opacity: 1; }
 
         /* ===== MEETINGS ===== */
         .meeting {
@@ -448,52 +447,16 @@
             transition: all 0.15s ease;
         }
 
-        .meeting:hover {
-            border-left-color: var(--accent);
-            background: var(--accent-bg);
-        }
-
-        .meeting.past {
-            opacity: 0.45;
-            border-left-color: var(--card-border);
-        }
-
-        .meeting-date {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--ink);
-        }
-
-        .meeting-time {
-            font-size: 0.75rem;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .meeting-place {
-            font-size: 0.8rem;
-            color: var(--text-mid);
-            margin-top: 4px;
-        }
-
-        .meeting-note {
-            font-size: 0.75rem;
-            color: var(--text-light);
-            margin-top: 3px;
-            font-style: italic;
-        }
-
-        .meeting-actions {
-            margin-top: 8px;
-        }
+        .meeting:hover { border-left-color: var(--accent); background: var(--accent-bg); }
+        .meeting.past { opacity: 0.45; border-left-color: var(--card-border); }
+        .meeting-date { font-weight: 600; font-size: 0.85rem; color: var(--ink); }
+        .meeting-time { font-size: 0.75rem; color: var(--accent); font-weight: 500; }
+        .meeting-place { font-size: 0.8rem; color: var(--text-mid); margin-top: 4px; }
+        .meeting-note { font-size: 0.75rem; color: var(--text-light); margin-top: 3px; font-style: italic; }
+        .meeting-actions { margin-top: 8px; }
 
         /* ===== FILTERS ===== */
-        .filters {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
+        .filters { display: flex; gap: 4px; margin-bottom: 16px; flex-wrap: wrap; }
 
         .filter-btn {
             padding: 5px 14px;
@@ -508,11 +471,7 @@
             transition: all 0.15s ease;
         }
 
-        .filter-btn.on {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-bg);
-        }
+        .filter-btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
 
         /* ===== CHECKLIST ===== */
         .check {
@@ -526,34 +485,21 @@
         }
 
         .check:last-child { border-bottom: none; }
-
         .check.done { opacity: 0.35; }
         .check.done .check-label { text-decoration: line-through; }
 
         .check-box {
-            width: 20px;
-            height: 20px;
+            width: 20px; height: 20px;
             border: 2px solid var(--card-border);
             border-radius: 6px;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             transition: all 0.15s ease;
-            font-size: 11px;
-            color: transparent;
+            font-size: 11px; color: transparent;
         }
 
-        .check.done .check-box {
-            background: var(--sage);
-            border-color: var(--sage);
-            color: white;
-        }
-
-        .check-label {
-            flex: 1;
-            font-size: 0.85rem;
-        }
+        .check.done .check-box { background: var(--sage); border-color: var(--sage); color: white; }
+        .check-label { flex: 1; font-size: 0.85rem; }
 
         .check-cat {
             font-size: 0.65rem;
@@ -565,11 +511,7 @@
             white-space: nowrap;
         }
 
-        .check-rm {
-            opacity: 0;
-            transition: opacity 0.15s;
-        }
-
+        .check-rm { opacity: 0; transition: opacity 0.15s; }
         .check:hover .check-rm { opacity: 1; }
 
         /* ===== WISH CARDS ===== */
@@ -584,34 +526,12 @@
         .wish:hover { background: var(--accent-bg); }
         .wish.done { opacity: 0.35; }
         .wish.done .wish-body { text-decoration: line-through; }
-
-        .wish-from {
-            font-size: 0.65rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-light);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .wish-body {
-            font-size: 0.88rem;
-            line-height: 1.6;
-            color: var(--text);
-        }
-
-        .wish-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 6px;
-        }
+        .wish-from { font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); font-weight: 600; margin-bottom: 6px; }
+        .wish-body { font-size: 0.88rem; line-height: 1.6; color: var(--text); }
+        .wish-actions { margin-top: 10px; display: flex; gap: 6px; }
 
         /* ===== PERSON PICKER ===== */
-        .picker {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
+        .picker { display: flex; gap: 8px; margin-bottom: 14px; }
 
         .picker-btn {
             flex: 1;
@@ -628,21 +548,11 @@
             text-align: center;
         }
 
-        .picker-btn.on {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: var(--accent-bg);
-        }
+        .picker-btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
 
-        /* ===== EMPTY ===== */
-        .empty {
-            text-align: center;
-            padding: 32px 16px;
-            color: var(--text-light);
-            font-size: 0.8rem;
-        }
+        /* ===== MISC ===== */
+        .empty { text-align: center; padding: 32px 16px; color: var(--text-light); font-size: 0.8rem; }
 
-        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 28px;
@@ -661,32 +571,69 @@
             transition: all 0.25s ease;
         }
 
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* ===== SETTINGS ===== */
-        .names-row {
+        .names-row { display: flex; align-items: center; gap: 12px; }
+        .names-row input { max-width: 160px; }
+        .names-heart { color: var(--accent-soft); font-size: 0.85rem; }
+
+        .room-info {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--sage-bg);
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
         }
 
-        .names-row input {
-            max-width: 160px;
+        .room-info-code {
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            color: var(--sage);
+            font-weight: 700;
+            letter-spacing: 1px;
         }
 
-        .names-heart {
-            color: var(--accent-soft);
-            font-size: 0.85rem;
+        .room-info-label {
+            font-size: 0.7rem;
+            color: var(--text-light);
         }
 
-        .danger-zone {
-            border-color: #E8D2D2;
+        .danger-zone { border-color: #E8D2D2; }
+
+        .setup-instructions {
+            font-size: 0.78rem;
+            color: var(--text-mid);
+            line-height: 1.7;
+            padding: 0;
+            list-style: none;
+            counter-reset: steps;
         }
 
-        /* ===== RESPONSIVE ===== */
+        .setup-instructions li {
+            counter-increment: steps;
+            padding: 6px 0 6px 28px;
+            position: relative;
+        }
+
+        .setup-instructions li::before {
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            top: 6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-bg);
+            color: var(--accent);
+            font-size: 0.68rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         @media (max-width: 520px) {
             .header h1 { font-size: 2.2rem; }
             .savings-amount { font-size: 2.6rem; }
@@ -694,11 +641,59 @@
             .field-row { flex-direction: column; }
             .nav-btn { padding: 8px 14px; font-size: 0.75rem; }
             .card { padding: 18px; }
-            .countdown { gap: 16px; }
+            .setup-box h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
+
+<!-- ===== SETUP OVERLAY ===== -->
+<div class="setup-overlay" id="setup-overlay">
+    <div class="setup-box">
+        <h1>подключение</h1>
+        <p class="setup-sub">чтобы данные синхронизировались между вами</p>
+
+        <div class="setup-card">
+            <div class="setup-step">шаг 1 — создать базу данных</div>
+            <ol class="setup-instructions">
+                <li>Откройте <a href="https://console.firebase.google.com/" target="_blank">console.firebase.google.com</a></li>
+                <li>Нажмите <strong>«Create a project»</strong> → придумайте имя → создайте</li>
+                <li>Слева выберите <strong>«Build → Realtime Database»</strong></li>
+                <li>Нажмите <strong>«Create Database»</strong> → выберите регион → <strong>«Start in test mode»</strong></li>
+                <li>Перейдите в <strong>«Project settings»</strong> (шестерёнка) → внизу нажмите <strong>«Add app» → Web (&lt;/&gt;)</strong></li>
+                <li>Придумайте имя приложения → нажмите <strong>«Register app»</strong></li>
+                <li>Скопируйте блок <code>firebaseConfig = { ... }</code> — вставьте ниже</li>
+            </ol>
+        </div>
+
+        <div class="setup-card">
+            <div class="setup-step">шаг 2 — вставьте конфиг</div>
+            <div class="field">
+                <textarea id="setup-config" placeholder='{"apiKey": "...", "authDomain": "...", "databaseURL": "...", "projectId": "...", "storageBucket": "...", "messagingSenderId": "...", "appId": "..."}' style="min-height: 110px; font-size: 0.78rem; font-family: monospace;"></textarea>
+            </div>
+            <div class="setup-hint">Вставьте JSON-объект конфига. Можно скопировать прямо из Firebase — подойдёт и формат <code>const config = {...}</code>, мы сами достанем JSON.</div>
+            <div class="setup-error" id="setup-err-config">Не удалось прочитать конфиг. Проверьте формат.</div>
+        </div>
+
+        <div class="setup-card">
+            <div class="setup-step">шаг 3 — комната</div>
+            <p class="setup-text">Придумайте код комнаты и сообщите его второму человеку. Или введите код, который вам прислали.</p>
+            <div class="field-row">
+                <div class="field"><input type="text" id="setup-room" placeholder="например: china2026"></div>
+                <button class="btn btn-soft" onclick="generateRoom()" style="white-space:nowrap;height:42px">Случайный</button>
+            </div>
+            <div class="setup-error" id="setup-err-room">Введите код комнаты.</div>
+        </div>
+
+        <div class="inline-btns">
+            <button class="btn btn-main" onclick="connectSetup()">Подключиться</button>
+            <button class="btn btn-soft" onclick="skipSetup()">Без синхронизации</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" style="display:none">
 
 <header class="header">
     <div class="header-tag">копим вместе</div>
@@ -706,6 +701,8 @@
     <p class="header-sub" id="header-sub">маленькими шагами к большой мечте</p>
     <div class="header-line"></div>
 </header>
+
+<div class="sync-status" id="sync-status"></div>
 
 <nav class="nav">
     <button class="nav-btn active" data-tab="savings">копилка</button>
@@ -717,20 +714,16 @@
 
 <main class="container">
 
-    <!-- ===== SAVINGS ===== -->
+    <!-- SAVINGS -->
     <section class="section active" id="s-savings">
-
         <div class="countdown hidden" id="countdown"></div>
-
         <div class="card">
             <div class="savings-hero">
                 <div class="savings-amount" id="total-saved">0 ₽</div>
                 <div class="savings-of">из <span id="goal-show">0</span></div>
             </div>
             <div class="progress-wrap">
-                <div class="progress-track">
-                    <div class="progress-bar" id="pbar" style="width:0%"></div>
-                </div>
+                <div class="progress-track"><div class="progress-bar" id="pbar" style="width:0%"></div></div>
                 <div class="progress-label" id="pct-label">0 %</div>
             </div>
             <div class="stats-row">
@@ -739,7 +732,6 @@
                 <div class="stat"><div class="stat-val" id="st-left">0</div><div class="stat-label">осталось</div></div>
             </div>
         </div>
-
         <div class="card">
             <div class="card-label">Новый взнос</div>
             <div class="field-row">
@@ -749,14 +741,13 @@
             <div class="field"><label>Комментарий</label><input type="text" id="sav-note" placeholder="зарплата, подработка..."></div>
             <button class="btn btn-main" onclick="addSaving()">Добавить</button>
         </div>
-
         <div class="card">
             <div class="card-label">История</div>
             <div id="sav-list"></div>
         </div>
     </section>
 
-    <!-- ===== MEETINGS ===== -->
+    <!-- MEETINGS -->
     <section class="section" id="s-meetings">
         <div class="card">
             <div class="card-label">Запланировать</div>
@@ -768,7 +759,6 @@
             <div class="field"><label>Заметка</label><input type="text" id="mt-note" placeholder="что не забыть"></div>
             <button class="btn btn-main" onclick="addMeeting()">Запланировать</button>
         </div>
-
         <div class="card">
             <div class="card-label">Наши встречи</div>
             <div class="filters" id="mt-filters">
@@ -780,7 +770,7 @@
         </div>
     </section>
 
-    <!-- ===== WISHLIST ===== -->
+    <!-- WISHLIST -->
     <section class="section" id="s-wishlist">
         <div class="card">
             <div class="card-label">Новая хотелка</div>
@@ -797,7 +787,6 @@
             </div>
             <button class="btn btn-sage" onclick="addWish()">Добавить</button>
         </div>
-
         <div class="card">
             <div class="card-label">Список</div>
             <div class="filters" id="wl-filters">
@@ -812,7 +801,7 @@
         </div>
     </section>
 
-    <!-- ===== WISHES ===== -->
+    <!-- WISHES -->
     <section class="section" id="s-wishes">
         <div class="card">
             <div class="card-label">Написать пожелание</div>
@@ -823,7 +812,6 @@
             <div class="field"><label>Чего хочу от тебя</label><textarea id="w-text" placeholder="напиши, чего хочешь..."></textarea></div>
             <button class="btn btn-main" onclick="addWishFor()">Отправить</button>
         </div>
-
         <div class="card">
             <div class="card-label">Пожелания друг другу</div>
             <div class="filters" id="w-filters">
@@ -837,11 +825,16 @@
         </div>
     </section>
 
-    <!-- ===== SETTINGS ===== -->
+    <!-- SETTINGS -->
     <section class="section" id="s-settings">
+
+        <div class="card" id="conn-card">
+            <div class="card-label">Синхронизация</div>
+            <div id="conn-info"></div>
+        </div>
+
         <div class="card">
             <div class="card-label">Общее</div>
-
             <div class="field">
                 <label>Ваши имена</label>
                 <div class="names-row">
@@ -850,7 +843,6 @@
                     <input type="text" id="cfg-n2" placeholder="Она">
                 </div>
             </div>
-
             <div class="field-row">
                 <div class="field"><label>Цель</label><input type="number" id="cfg-goal" placeholder="500000"></div>
                 <div class="field">
@@ -863,9 +855,7 @@
                     </select>
                 </div>
             </div>
-
             <div class="field"><label>Примерная дата поездки</label><input type="date" id="cfg-trip"></div>
-
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
                 <button class="btn btn-main" onclick="saveSettings()">Сохранить</button>
                 <button class="btn btn-soft" onclick="exportData()">Экспорт</button>
@@ -881,6 +871,7 @@
         </div>
     </section>
 </main>
+</div>
 
 <script>
 // ===== DATA =====
@@ -889,15 +880,11 @@ const DEFAULTS = {
     savings: [], meetings: [], wishlist: [], wishesFor: []
 };
 
-function load() {
-    try {
-        const r = localStorage.getItem('ct');
-        if (r) { const p = JSON.parse(r); return { ...DEFAULTS, ...p, settings: { ...DEFAULTS.settings, ...p.settings } }; }
-    } catch(e) {}
-    return JSON.parse(JSON.stringify(DEFAULTS));
-}
-function save() { localStorage.setItem('ct', JSON.stringify(D)); }
-let D = load();
+let D = JSON.parse(JSON.stringify(DEFAULTS));
+let db = null;
+let roomRef = null;
+let isRemoteUpdate = false;
+let syncMode = 'local'; // 'local' or 'firebase'
 
 // ===== UTILS =====
 const fmt = n => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -919,6 +906,222 @@ function toast(msg) {
     document.body.appendChild(t);
     requestAnimationFrame(() => t.classList.add('show'));
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 250); }, 2200);
+}
+
+// ===== PERSISTENCE =====
+function persist() {
+    // Always save locally as cache
+    localStorage.setItem('ct-data', JSON.stringify(D));
+
+    // If connected to Firebase, push there too
+    if (syncMode === 'firebase' && roomRef && !isRemoteUpdate) {
+        roomRef.set(D);
+    }
+}
+
+function loadLocal() {
+    try {
+        const r = localStorage.getItem('ct-data');
+        if (r) { const p = JSON.parse(r); return { ...DEFAULTS, ...p, settings: { ...DEFAULTS.settings, ...p.settings } }; }
+    } catch(e) {}
+    return JSON.parse(JSON.stringify(DEFAULTS));
+}
+
+// ===== FIREBASE =====
+function parseConfig(raw) {
+    let text = raw.trim();
+    // Try to extract JSON object from various formats
+    // Handle: const config = {...}  or  firebaseConfig = {...}  or just {...}
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+        // Clean up: remove trailing commas, fix single quotes
+        let json = match[0]
+            .replace(/,\s*([\}\]])/g, '$1')
+            .replace(/'/g, '"')
+            .replace(/(\w+)\s*:/g, '"$1":')  // unquoted keys
+            .replace(/""/g, '"');             // fix double-quoted
+        // Remove duplicate quotes on already-quoted keys
+        json = json.replace(/"+"(\w+)"+":/g, '"$1":');
+        return JSON.parse(json);
+    } catch(e) {
+        // Second attempt: more aggressive cleanup
+        try {
+            let cleaned = match[0].replace(/'/g, '"');
+            // Ensure all keys are quoted
+            cleaned = cleaned.replace(/([{,]\s*)(\w+)\s*:/g, '$1"$2":');
+            cleaned = cleaned.replace(/,\s*}/g, '}');
+            return JSON.parse(cleaned);
+        } catch(e2) {
+            return null;
+        }
+    }
+}
+
+function connectFirebase(config, room) {
+    try {
+        // Initialize Firebase (only once)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
+        db = firebase.database();
+        roomRef = db.ref('rooms/' + room);
+
+        // Listen for changes
+        roomRef.on('value', snapshot => {
+            const val = snapshot.val();
+            if (val) {
+                isRemoteUpdate = true;
+                D = { ...DEFAULTS, ...val, settings: { ...DEFAULTS.settings, ...(val.settings || {}) } };
+                // Ensure arrays
+                ['savings', 'meetings', 'wishlist', 'wishesFor'].forEach(k => {
+                    if (!Array.isArray(D[k])) D[k] = [];
+                });
+                localStorage.setItem('ct-data', JSON.stringify(D));
+                loadSettingsUI();
+                renderAll();
+                isRemoteUpdate = false;
+            }
+        });
+
+        // Connection state
+        db.ref('.info/connected').on('value', snap => {
+            const el = document.getElementById('sync-status');
+            if (snap.val() === true) {
+                el.innerHTML = '<span class="sync-dot online"></span>синхронизировано — комната: ' + room;
+            } else {
+                el.innerHTML = '<span class="sync-dot offline"></span>нет подключения';
+            }
+        });
+
+        syncMode = 'firebase';
+
+        // Save connection info locally
+        localStorage.setItem('ct-firebase', JSON.stringify({ config, room }));
+
+        // Show connection info in settings
+        renderConnInfo(room);
+
+        return true;
+    } catch (e) {
+        console.error('Firebase connect error:', e);
+        return false;
+    }
+}
+
+function renderConnInfo(room) {
+    const el = document.getElementById('conn-info');
+    if (!el) return;
+
+    if (syncMode === 'firebase') {
+        el.innerHTML = `
+            <div class="room-info">
+                <div>
+                    <div class="room-info-label">код комнаты</div>
+                    <div class="room-info-code">${room}</div>
+                </div>
+                <div style="margin-left:auto">
+                    <button class="btn btn-ghost" onclick="copyRoom('${room}')">скопировать</button>
+                </div>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-light);margin-bottom:10px">Передайте этот код и конфиг Firebase второму человеку. У вас общие данные.</p>
+            <button class="btn btn-soft" onclick="disconnect()" style="font-size:0.75rem">Отключить синхронизацию</button>
+        `;
+    } else {
+        el.innerHTML = `
+            <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:10px">Синхронизация не подключена. Данные хранятся только в этом браузере.</p>
+            <button class="btn btn-main" onclick="showSetup()" style="font-size:0.75rem">Подключить</button>
+        `;
+    }
+}
+
+function copyRoom(room) {
+    navigator.clipboard.writeText(room).then(() => toast('код скопирован'));
+}
+
+function disconnect() {
+    if (!confirm('Отключить синхронизацию? Данные останутся локально.')) return;
+    if (roomRef) roomRef.off();
+    roomRef = null;
+    db = null;
+    syncMode = 'local';
+    localStorage.removeItem('ct-firebase');
+    document.getElementById('sync-status').innerHTML = '';
+    renderConnInfo(null);
+    toast('синхронизация отключена');
+}
+
+// ===== SETUP FLOW =====
+function generateRoom() {
+    const words = ['panda','dragon','lotus','bamboo','jade','silk','moon','lantern','temple','river','peach','crane','cloud','tiger','phoenix'];
+    const w1 = words[Math.floor(Math.random() * words.length)];
+    const w2 = words[Math.floor(Math.random() * words.length)];
+    const n = Math.floor(Math.random() * 900) + 100;
+    document.getElementById('setup-room').value = w1 + '-' + w2 + '-' + n;
+}
+
+function connectSetup() {
+    const configRaw = document.getElementById('setup-config').value;
+    const room = document.getElementById('setup-room').value.trim().toLowerCase().replace(/\s+/g, '-');
+
+    document.getElementById('setup-err-config').style.display = 'none';
+    document.getElementById('setup-err-room').style.display = 'none';
+
+    const config = parseConfig(configRaw);
+    if (!config || !config.apiKey) {
+        document.getElementById('setup-err-config').style.display = 'block';
+        return;
+    }
+
+    if (!config.databaseURL) {
+        // Try to construct it from projectId
+        if (config.projectId) {
+            config.databaseURL = 'https://' + config.projectId + '-default-rtdb.firebaseio.com';
+        } else {
+            document.getElementById('setup-err-config').style.display = 'block';
+            return;
+        }
+    }
+
+    if (!room) {
+        document.getElementById('setup-err-room').style.display = 'block';
+        return;
+    }
+
+    const ok = connectFirebase(config, room);
+    if (!ok) {
+        document.getElementById('setup-err-config').style.display = 'block';
+        return;
+    }
+
+    // Check if room already has data; if not, push our local data
+    roomRef.once('value', snap => {
+        if (!snap.val()) {
+            // New room — push local data as initial
+            D = loadLocal();
+            persist();
+        }
+        showApp();
+    });
+}
+
+function skipSetup() {
+    syncMode = 'local';
+    D = loadLocal();
+    showApp();
+    renderConnInfo(null);
+}
+
+function showSetup() {
+    document.getElementById('setup-overlay').classList.remove('hidden');
+    document.getElementById('app').style.display = 'none';
+}
+
+function showApp() {
+    document.getElementById('setup-overlay').classList.add('hidden');
+    document.getElementById('app').style.display = '';
+    loadSettingsUI();
+    renderAll();
 }
 
 // ===== TABS =====
@@ -990,24 +1193,17 @@ function addSaving() {
     if (!amount || amount <= 0) return toast('укажите сумму');
     if (!date) return toast('укажите дату');
 
-    const prevTotal = D.savings.reduce((s, e) => s + e.amount, 0);
     D.savings.push({ id: uid(), amount, date, note });
-    save(); renderSavings();
-
+    persist(); renderSavings();
     document.getElementById('sav-amount').value = '';
     document.getElementById('sav-note').value = '';
-
-    const newPct = Math.round(D.savings.reduce((s, e) => s + e.amount, 0) / D.settings.goal * 100);
-    const oldPct = Math.round(prevTotal / D.settings.goal * 100);
-    if (newPct >= 100 && oldPct < 100) toast('цель достигнута!');
-    else if (newPct >= 50 && oldPct < 50) toast('половина пути!');
-    else toast('добавлено');
+    toast('добавлено');
 }
 
 function delSaving(id) {
     if (!confirm('Удалить?')) return;
     D.savings = D.savings.filter(e => e.id !== id);
-    save(); renderSavings();
+    persist(); renderSavings();
 }
 
 // ===== MEETINGS =====
@@ -1049,13 +1245,12 @@ function addMeeting() {
     const date = document.getElementById('mt-date').value;
     if (!date) return toast('укажите дату');
     D.meetings.push({
-        id: uid(),
-        date,
+        id: uid(), date,
         time: document.getElementById('mt-time').value,
         place: document.getElementById('mt-place').value.trim(),
         note: document.getElementById('mt-note').value.trim()
     });
-    save(); renderMeetings();
+    persist(); renderMeetings();
     ['mt-date','mt-time','mt-place','mt-note'].forEach(id => document.getElementById(id).value = '');
     toast('встреча добавлена');
 }
@@ -1063,7 +1258,7 @@ function addMeeting() {
 function delMeeting(id) {
     if (!confirm('Удалить?')) return;
     D.meetings = D.meetings.filter(m => m.id !== id);
-    save(); renderMeetings();
+    persist(); renderMeetings();
 }
 
 // ===== WISHLIST =====
@@ -1101,20 +1296,20 @@ function addWish() {
     const text = document.getElementById('wl-text').value.trim();
     if (!text) return toast('напишите хотелку');
     D.wishlist.push({ id: uid(), text, category: document.getElementById('wl-cat').value, done: false });
-    save(); renderWishlist();
+    persist(); renderWishlist();
     document.getElementById('wl-text').value = '';
     toast('добавлено');
 }
 
 function toggleWL(id) {
     const w = D.wishlist.find(x => x.id === id);
-    if (w) { w.done = !w.done; save(); renderWishlist(); }
+    if (w) { w.done = !w.done; persist(); renderWishlist(); }
 }
 
 function delWL(id) {
     if (!confirm('Удалить?')) return;
     D.wishlist = D.wishlist.filter(x => x.id !== id);
-    save(); renderWishlist();
+    persist(); renderWishlist();
 }
 
 // ===== WISHES FOR EACH OTHER =====
@@ -1166,24 +1361,24 @@ function addWishFor() {
     const text = document.getElementById('w-text').value.trim();
     if (!text) return toast('напишите пожелание');
     D.wishesFor.push({ id: uid(), from: wPerson, text, fulfilled: false, createdAt: new Date().toISOString() });
-    save(); renderWishesFor();
+    persist(); renderWishesFor();
     document.getElementById('w-text').value = '';
     toast('отправлено');
 }
 
 function toggleWF(id) {
     const w = D.wishesFor.find(x => x.id === id);
-    if (w) { w.fulfilled = !w.fulfilled; save(); renderWishesFor(); }
+    if (w) { w.fulfilled = !w.fulfilled; persist(); renderWishesFor(); }
 }
 
 function delWF(id) {
     if (!confirm('Удалить?')) return;
     D.wishesFor = D.wishesFor.filter(x => x.id !== id);
-    save(); renderWishesFor();
+    persist(); renderWishesFor();
 }
 
 // ===== SETTINGS =====
-function loadSettings() {
+function loadSettingsUI() {
     document.getElementById('cfg-goal').value = D.settings.goal || '';
     document.getElementById('cfg-cur').value = D.settings.currency || '₽';
     document.getElementById('cfg-trip').value = D.settings.tripDate || '';
@@ -1198,10 +1393,7 @@ function saveSettings() {
     D.settings.tripDate = document.getElementById('cfg-trip').value;
     D.settings.person1 = document.getElementById('cfg-n1').value.trim();
     D.settings.person2 = document.getElementById('cfg-n2').value.trim();
-    save(); updateLabels(); renderSavings(); renderCountdown();
-    // Update header subtitle with names if set
-    const n1 = D.settings.person1, n2 = D.settings.person2;
-    if (n1 && n2) document.getElementById('header-sub').textContent = n1 + ' & ' + n2;
+    persist(); updateLabels(); renderSavings(); renderCountdown();
     toast('сохранено');
 }
 
@@ -1213,6 +1405,7 @@ function updateLabels() {
     document.getElementById('ff2').textContent = 'от ' + p2;
     const n1 = D.settings.person1, n2 = D.settings.person2;
     if (n1 && n2) document.getElementById('header-sub').textContent = n1 + ' & ' + n2;
+    else document.getElementById('header-sub').textContent = 'маленькими шагами к большой мечте';
 }
 
 function exportData() {
@@ -1232,7 +1425,7 @@ function importData(e) {
         try {
             const p = JSON.parse(ev.target.result);
             D = { ...DEFAULTS, ...p, settings: { ...DEFAULTS.settings, ...p.settings } };
-            save(); loadSettings(); renderAll();
+            persist(); loadSettingsUI(); renderAll();
             toast('импортировано');
         } catch { toast('ошибка чтения'); }
     };
@@ -1242,18 +1435,44 @@ function importData(e) {
 
 function clearAll() {
     if (!confirm('Точно удалить все данные?')) return;
-    localStorage.removeItem('ct');
     D = JSON.parse(JSON.stringify(DEFAULTS));
-    loadSettings(); renderAll();
+    persist(); loadSettingsUI(); renderAll();
     toast('данные удалены');
 }
 
-// ===== INIT =====
+// ===== RENDER =====
 function renderAll() { renderSavings(); renderMeetings(); renderWishlist(); renderWishesFor(); renderCountdown(); }
 
+// ===== INIT =====
 document.getElementById('sav-date').value = new Date().toISOString().split('T')[0];
-loadSettings();
-renderAll();
+
+// Check if we have saved Firebase connection
+const savedConn = localStorage.getItem('ct-firebase');
+if (savedConn) {
+    try {
+        const { config, room } = JSON.parse(savedConn);
+        const ok = connectFirebase(config, room);
+        if (ok) {
+            showApp();
+        } else {
+            D = loadLocal();
+            showApp();
+            renderConnInfo(null);
+        }
+    } catch(e) {
+        D = loadLocal();
+        showApp();
+        renderConnInfo(null);
+    }
+} else {
+    // Check if there's local data — if so, offer to skip setup
+    const hasLocal = localStorage.getItem('ct-data');
+    if (hasLocal) {
+        // Has existing data, show setup but they can skip
+    }
+    // Show setup overlay (default state)
+}
+
 setInterval(renderCountdown, 60000);
 </script>
 </body>
