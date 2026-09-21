@@ -634,14 +634,186 @@
             justify-content: center;
         }
 
-        @media (max-width: 520px) {
-            .header h1 { font-size: 2.2rem; }
-            .savings-amount { font-size: 2.6rem; }
-            .stats-row { grid-template-columns: 1fr; }
-            .field-row { flex-direction: column; }
-            .nav-btn { padding: 8px 14px; font-size: 0.75rem; }
-            .card { padding: 18px; }
-            .setup-box h1 { font-size: 2rem; }
+        /* ===== MOBILE — BOTTOM NAV ===== */
+        @media (max-width: 600px) {
+            html { padding: env(safe-area-inset-top) 0 0 0; }
+
+            .header { padding: 40px 20px 36px; }
+            .header-tag { font-size: 0.6rem; padding: 5px 12px; margin-bottom: 12px; }
+            .header h1 { font-size: 2.1rem; }
+            .header-sub { font-size: 0.8rem; }
+            .header-line { margin-top: 18px; }
+
+            .nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                background: var(--card);
+                border-top: 1px solid var(--card-border);
+                padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+                z-index: 200;
+                gap: 2px;
+                justify-content: space-around;
+                box-shadow: 0 -2px 12px rgba(60,50,40,0.06);
+            }
+
+            .nav::before { display: none; }
+
+            .nav-btn {
+                padding: 8px 6px;
+                font-size: 0.65rem;
+                border-radius: 10px;
+                flex: 1;
+                text-align: center;
+                min-width: 0;
+            }
+
+            .container {
+                padding: 16px 12px calc(80px + env(safe-area-inset-bottom));
+            }
+
+            .sync-status { font-size: 0.62rem; margin-bottom: 0; padding: 0 12px; }
+
+            .card { padding: 16px; margin-bottom: 12px; border-radius: 12px; }
+            .card-label { font-size: 0.65rem; margin-bottom: 12px; }
+
+            .savings-hero { padding: 8px 0 16px; }
+            .savings-amount { font-size: 2.4rem; }
+            .savings-of { font-size: 0.8rem; }
+
+            .stats-row { margin-top: 16px; border-radius: 8px; }
+            .stat { padding: 12px 4px; }
+            .stat-val { font-size: 0.95rem; }
+            .stat-label { font-size: 0.58rem; }
+
+            .countdown { padding: 16px; gap: 20px; border-radius: 8px; margin-bottom: 12px; }
+            .cd-num { font-size: 1.7rem; }
+
+            .progress-track { height: 6px; }
+            .progress-label { font-size: 0.7rem; }
+
+            input, textarea, select {
+                padding: 12px 14px;
+                font-size: 16px; /* prevents iOS zoom on focus */
+                border-radius: 8px;
+            }
+
+            .field { margin-bottom: 10px; }
+            .field label { font-size: 0.68rem; margin-bottom: 5px; }
+            .field-row { flex-direction: column; gap: 0; }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 0.82rem;
+                border-radius: 10px;
+            }
+
+            .btn-ghost { padding: 8px 12px; font-size: 0.75rem; }
+
+            .filters {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                gap: 6px;
+                padding-bottom: 4px;
+                margin-bottom: 12px;
+            }
+
+            .filters::-webkit-scrollbar { display: none; }
+
+            .filter-btn {
+                padding: 7px 14px;
+                font-size: 0.7rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+
+            .entry-remove { opacity: 0.5; }
+            .check-rm { opacity: 0.5; }
+
+            .entry { padding: 12px 0; gap: 10px; }
+            .entry-dot { width: 6px; height: 6px; }
+            .entry-title { font-size: 0.82rem; }
+            .entry-meta { font-size: 0.68rem; }
+            .entry-amount { font-size: 0.85rem; }
+
+            .meeting { padding: 14px; border-radius: 0 8px 8px 0; margin-bottom: 8px; }
+            .meeting-date { font-size: 0.82rem; }
+            .meeting-place { font-size: 0.78rem; }
+            .meeting-note { font-size: 0.72rem; }
+            .meeting-actions { margin-top: 6px; }
+
+            .check { padding: 10px 0; gap: 10px; }
+            .check-box { width: 22px; height: 22px; }
+            .check-label { font-size: 0.82rem; }
+            .check-cat { font-size: 0.6rem; padding: 2px 6px; }
+
+            .wish { padding: 14px; border-radius: 8px; margin-bottom: 8px; }
+            .wish-from { font-size: 0.62rem; }
+            .wish-body { font-size: 0.84rem; }
+
+            .picker { gap: 6px; }
+            .picker-btn { padding: 12px 8px; font-size: 0.8rem; border-radius: 10px; }
+
+            .names-row { flex-direction: column; gap: 8px; align-items: stretch; }
+            .names-row input { max-width: 100%; }
+            .names-heart { text-align: center; }
+
+            .room-info { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .room-info > div:last-child { margin-left: 0; }
+
+            .toast {
+                bottom: calc(72px + env(safe-area-inset-bottom));
+                padding: 10px 20px;
+                font-size: 0.78rem;
+                border-radius: 8px;
+            }
+
+            .setup-overlay {
+                align-items: flex-start;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding: 40px 16px calc(40px + env(safe-area-inset-bottom));
+            }
+
+            .setup-box h1 { font-size: 1.9rem; }
+            .setup-box .setup-sub { font-size: 0.8rem; margin-bottom: 20px; }
+            .setup-card { padding: 18px; margin-bottom: 12px; border-radius: 12px; }
+            .setup-step { font-size: 0.6rem; margin-bottom: 8px; }
+            .setup-text { font-size: 0.78rem; }
+            .setup-hint { font-size: 0.68rem; }
+            .setup-instructions { font-size: 0.74rem; line-height: 1.6; }
+            .setup-instructions li { padding: 5px 0 5px 26px; }
+            .setup-instructions li::before { width: 18px; height: 18px; font-size: 0.62rem; }
+            .room-code-display { font-size: 1.5rem; padding: 10px; }
+        }
+
+        /* very small phones */
+        @media (max-width: 380px) {
+            .header { padding: 32px 16px 28px; }
+            .header h1 { font-size: 1.8rem; }
+            .nav-btn { font-size: 0.58rem; padding: 6px 4px; }
+            .savings-amount { font-size: 2rem; }
+            .stat-val { font-size: 0.85rem; }
+            .card { padding: 14px; }
+            .btn { padding: 11px 18px; font-size: 0.78rem; }
+        }
+
+        /* tablets */
+        @media (min-width: 601px) and (max-width: 900px) {
+            .container { max-width: 600px; }
+            .card { padding: 22px; }
+        }
+
+        /* touch devices — always show actions */
+        @media (hover: none) {
+            .entry-remove { opacity: 0.4; }
+            .check-rm { opacity: 0.4; }
+            .card:hover { box-shadow: var(--shadow-sm); }
+            .meeting:hover { border-left-color: var(--accent-soft); background: var(--bg); }
         }
     </style>
 </head>
